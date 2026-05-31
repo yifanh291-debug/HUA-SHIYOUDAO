@@ -1,9 +1,25 @@
 const canvas = document.querySelector("#posterCanvas");
 const ctx = canvas.getContext("2d");
 
+const templateCategories = [
+  { key: "hot", name: "热门" },
+  { key: "guide", name: "引导" },
+  { key: "simple", name: "简约" },
+  { key: "fresh", name: "清新" },
+  { key: "retro", name: "复古" },
+  { key: "business", name: "商务" },
+  { key: "tech", name: "科技" },
+  { key: "education", name: "教育" },
+  { key: "food", name: "美食" },
+  { key: "travel", name: "旅行" },
+  { key: "cartoon", name: "卡通" },
+  { key: "marketing", name: "营销" },
+];
+
 const templates = {
   note: {
     name: "清醒便签",
+    category: "hot",
     thumb: ["#f8f2de", "#1f2a25"],
     accentShape: "corner",
     align: "left",
@@ -11,6 +27,7 @@ const templates = {
   },
   quote: {
     name: "主编金句",
+    category: "hot",
     thumb: ["#f6f7f4", "#d9604c"],
     accentShape: "rule",
     align: "center",
@@ -18,6 +35,7 @@ const templates = {
   },
   memo: {
     name: "运营备忘",
+    category: "hot",
     thumb: ["#173d30", "#f6fff8"],
     accentShape: "stamp",
     align: "left",
@@ -25,10 +43,267 @@ const templates = {
   },
   calm: {
     name: "松弛日签",
+    category: "hot",
     thumb: ["#e5f2ec", "#16835f"],
     accentShape: "circle",
     align: "center",
     weight: 700,
+  },
+  topFollow: {
+    name: "顶部关注",
+    category: "guide",
+    thumb: ["#eef6ff", "#2978b5"],
+    accentShape: "topBar",
+    align: "left",
+    weight: 800,
+  },
+  readMore: {
+    name: "阅读原文",
+    category: "guide",
+    thumb: ["#fff8e8", "#c47a1a"],
+    accentShape: "arrow",
+    align: "center",
+    weight: 800,
+  },
+  watchLike: {
+    name: "点个在看",
+    category: "guide",
+    thumb: ["#fff0f5", "#d96075"],
+    accentShape: "heart",
+    align: "center",
+    weight: 800,
+  },
+  qrCard: {
+    name: "扫码关注",
+    category: "guide",
+    thumb: ["#f4f7f2", "#2b5947"],
+    accentShape: "qr",
+    align: "left",
+    weight: 800,
+  },
+  minimalWhite: {
+    name: "极简留白",
+    category: "simple",
+    thumb: ["#ffffff", "#202522"],
+    accentShape: "minimal",
+    align: "left",
+    weight: 760,
+  },
+  magazine: {
+    name: "杂志标题",
+    category: "simple",
+    thumb: ["#f3f1eb", "#111111"],
+    accentShape: "split",
+    align: "left",
+    weight: 900,
+  },
+  lineNote: {
+    name: "细线笔记",
+    category: "simple",
+    thumb: ["#fafafa", "#7a7f78"],
+    accentShape: "thinFrame",
+    align: "center",
+    weight: 700,
+  },
+  blackGold: {
+    name: "黑金摘要",
+    category: "business",
+    thumb: ["#191815", "#d7b56d"],
+    accentShape: "luxury",
+    align: "center",
+    weight: 900,
+  },
+  report: {
+    name: "报告摘要",
+    category: "business",
+    thumb: ["#eff3f8", "#2b4d68"],
+    accentShape: "report",
+    align: "left",
+    weight: 800,
+  },
+  founder: {
+    name: "创始人说",
+    category: "business",
+    thumb: ["#f8f5ef", "#66503b"],
+    accentShape: "signature",
+    align: "left",
+    weight: 760,
+  },
+  neonAi: {
+    name: "AI霓虹",
+    category: "tech",
+    thumb: ["#07131f", "#27d7ff"],
+    accentShape: "neon",
+    align: "center",
+    weight: 900,
+  },
+  cloudTech: {
+    name: "云端科技",
+    category: "tech",
+    thumb: ["#e9f8fb", "#1687a7"],
+    accentShape: "circuit",
+    align: "left",
+    weight: 800,
+  },
+  dataPulse: {
+    name: "数据脉冲",
+    category: "tech",
+    thumb: ["#101926", "#65e6bd"],
+    accentShape: "pulse",
+    align: "left",
+    weight: 850,
+  },
+  classroom: {
+    name: "课程笔记",
+    category: "education",
+    thumb: ["#fff7d8", "#315c8d"],
+    accentShape: "book",
+    align: "left",
+    weight: 800,
+  },
+  exam: {
+    name: "备考提醒",
+    category: "education",
+    thumb: ["#f0f5ff", "#3c5bce"],
+    accentShape: "badge",
+    align: "center",
+    weight: 850,
+  },
+  knowledge: {
+    name: "知识卡片",
+    category: "education",
+    thumb: ["#f8fbf4", "#4f7d4b"],
+    accentShape: "grid",
+    align: "left",
+    weight: 760,
+  },
+  tea: {
+    name: "茶饮上新",
+    category: "food",
+    thumb: ["#fff2e5", "#bf6b3b"],
+    accentShape: "steam",
+    align: "center",
+    weight: 850,
+  },
+  recipe: {
+    name: "食谱小记",
+    category: "food",
+    thumb: ["#fffaf0", "#6c8a3d"],
+    accentShape: "plate",
+    align: "left",
+    weight: 760,
+  },
+  cityWalk: {
+    name: "城市漫游",
+    category: "travel",
+    thumb: ["#eaf4f7", "#276f87"],
+    accentShape: "route",
+    align: "center",
+    weight: 800,
+  },
+  postcard: {
+    name: "明信片",
+    category: "travel",
+    thumb: ["#fff6ed", "#c0604c"],
+    accentShape: "postmark",
+    align: "left",
+    weight: 760,
+  },
+  oldPaper: {
+    name: "旧报纸",
+    category: "retro",
+    thumb: ["#e8dfc8", "#3a3128"],
+    accentShape: "newspaper",
+    align: "left",
+    weight: 850,
+  },
+  chineseClassic: {
+    name: "新中式",
+    category: "retro",
+    thumb: ["#f7efe3", "#8d2f24"],
+    accentShape: "seal",
+    align: "center",
+    weight: 850,
+  },
+  hongKong: {
+    name: "港风标题",
+    category: "retro",
+    thumb: ["#151515", "#ffcf33"],
+    accentShape: "poster",
+    align: "left",
+    weight: 900,
+  },
+  cuteBubble: {
+    name: "可爱气泡",
+    category: "cartoon",
+    thumb: ["#fff0f7", "#df6c9f"],
+    accentShape: "bubble",
+    align: "center",
+    weight: 850,
+  },
+  comic: {
+    name: "漫画强调",
+    category: "cartoon",
+    thumb: ["#fff6c7", "#111111"],
+    accentShape: "comic",
+    align: "center",
+    weight: 900,
+  },
+  pet: {
+    name: "萌宠日记",
+    category: "cartoon",
+    thumb: ["#edf9f2", "#3c8d6b"],
+    accentShape: "paw",
+    align: "left",
+    weight: 780,
+  },
+  springFresh: {
+    name: "春日清新",
+    category: "fresh",
+    thumb: ["#edf8ea", "#5c9c59"],
+    accentShape: "leaf",
+    align: "center",
+    weight: 760,
+  },
+  softPink: {
+    name: "少女粉",
+    category: "fresh",
+    thumb: ["#fff0f4", "#d86f8c"],
+    accentShape: "petal",
+    align: "center",
+    weight: 760,
+  },
+  ocean: {
+    name: "海盐蓝",
+    category: "fresh",
+    thumb: ["#e9f8ff", "#247da0"],
+    accentShape: "wave",
+    align: "left",
+    weight: 800,
+  },
+  sale: {
+    name: "活动促销",
+    category: "marketing",
+    thumb: ["#fff4de", "#f04d3d"],
+    accentShape: "burst",
+    align: "center",
+    weight: 900,
+  },
+  launch: {
+    name: "新品发布",
+    category: "marketing",
+    thumb: ["#121212", "#ffde3b"],
+    accentShape: "launch",
+    align: "center",
+    weight: 900,
+  },
+  limited: {
+    name: "限时福利",
+    category: "marketing",
+    thumb: ["#fff2f2", "#d92d20"],
+    accentShape: "coupon",
+    align: "left",
+    weight: 880,
   },
 };
 
@@ -88,6 +363,7 @@ const samples = [
 const state = {
   text: document.querySelector("#copyInput").value,
   template: "note",
+  templateCategory: "hot",
   palette: "ink",
   ratio: "square",
   texture: "paper",
@@ -113,6 +389,7 @@ const state = {
 const elements = {
   copyInput: document.querySelector("#copyInput"),
   charCount: document.querySelector("#charCount"),
+  templateCategoryGrid: document.querySelector("#templateCategoryGrid"),
   templateGrid: document.querySelector("#templateGrid"),
   paletteGrid: document.querySelector("#paletteGrid"),
   ratioGroup: document.querySelector("#ratioGroup"),
@@ -148,15 +425,31 @@ const elements = {
 };
 
 function init() {
+  renderTemplateCategories();
   renderTemplateButtons();
   renderPaletteButtons();
   bindEvents();
   drawPoster();
 }
 
+function renderTemplateCategories() {
+  elements.templateCategoryGrid.innerHTML = "";
+  templateCategories.forEach((category) => {
+    const count = Object.values(templates).filter((template) => template.category === category.key).length;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `template-category ${category.key === state.templateCategory ? "active" : ""}`;
+    button.dataset.templateCategory = category.key;
+    button.innerHTML = `<span>${category.name}</span><em>${count}</em>`;
+    elements.templateCategoryGrid.append(button);
+  });
+}
+
 function renderTemplateButtons() {
   elements.templateGrid.innerHTML = "";
-  Object.entries(templates).forEach(([key, template]) => {
+  Object.entries(templates)
+    .filter(([, template]) => template.category === state.templateCategory)
+    .forEach(([key, template]) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `template-card ${key === state.template ? "active" : ""}`;
@@ -185,6 +478,24 @@ function renderPaletteButtons() {
 function bindEvents() {
   elements.copyInput.addEventListener("input", (event) => {
     state.text = event.target.value;
+    drawPoster();
+  });
+
+  elements.templateCategoryGrid.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-template-category]");
+    if (!button) return;
+    state.templateCategory = button.dataset.templateCategory;
+    const firstTemplate = Object.entries(templates).find(([, template]) => template.category === state.templateCategory);
+    if (firstTemplate) {
+      state.template = firstTemplate[0];
+      const position = getDefaultTextPosition(state.template);
+      state.textX = position.x;
+      state.textY = position.y;
+      elements.textX.value = state.textX;
+      elements.textY.value = state.textY;
+    }
+    renderTemplateCategories();
+    renderTemplateButtons();
     drawPoster();
   });
 
@@ -331,6 +642,7 @@ function bindEvents() {
     Object.assign(state, {
       text: samples[0],
       template: "note",
+      templateCategory: "hot",
       palette: "ink",
       ratio: "square",
       texture: "paper",
@@ -355,6 +667,7 @@ function bindEvents() {
     setActiveByData(elements.ratioGroup, "ratio", "square");
     setActiveByData(elements.textureGroup, "texture", "paper");
     setActiveByData(elements.dragModeGroup, "drag-mode", "text");
+    renderTemplateCategories();
     renderTemplateButtons();
     renderPaletteButtons();
     drawPoster();
@@ -482,6 +795,232 @@ function paintTemplateChrome(ratio, template, palette) {
     ctx.beginPath();
     ctx.arc(pad + 28, ratio.height - pad - 26, 34, 0, Math.PI * 2);
     ctx.stroke();
+  }
+
+  if (template.accentShape === "minimal") {
+    ctx.fillStyle = palette.text;
+    ctx.fillRect(pad, pad, 54, 7);
+    ctx.fillStyle = withAlpha(palette.accent, 0.18);
+    ctx.fillRect(pad, ratio.height - pad - 24, ratio.width - pad * 2, 2);
+  }
+
+  if (["thinFrame", "qr", "postcard"].includes(template.accentShape)) {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.55);
+    ctx.lineWidth = 3;
+    ctx.setLineDash(template.accentShape === "postcard" ? [18, 12] : []);
+    roundRect(pad * 0.72, pad * 0.72, ratio.width - pad * 1.44, ratio.height - pad * 1.44, 10);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  if (template.accentShape === "split") {
+    ctx.fillStyle = withAlpha(palette.accent, 0.12);
+    ctx.fillRect(ratio.width * 0.58, 52, ratio.width * 0.28, ratio.height - 104);
+    ctx.fillStyle = palette.accent2;
+    ctx.fillRect(pad, pad, 10, ratio.height - pad * 2);
+  }
+
+  if (["topBar", "report"].includes(template.accentShape)) {
+    ctx.fillStyle = withAlpha(palette.accent, 0.16);
+    ctx.fillRect(52, 52, ratio.width - 104, 58);
+    ctx.fillStyle = palette.accent;
+    ctx.fillRect(52, 104, ratio.width - 104, 6);
+    ctx.fillStyle = palette.accent2;
+    ctx.beginPath();
+    ctx.arc(ratio.width - 96, 81, 14, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  if (template.accentShape === "arrow") {
+    ctx.strokeStyle = palette.accent;
+    ctx.lineWidth = 7;
+    ctx.beginPath();
+    ctx.moveTo(pad, ratio.height - pad);
+    ctx.lineTo(ratio.width - pad - 32, ratio.height - pad);
+    ctx.lineTo(ratio.width - pad - 64, ratio.height - pad - 28);
+    ctx.moveTo(ratio.width - pad - 32, ratio.height - pad);
+    ctx.lineTo(ratio.width - pad - 64, ratio.height - pad + 28);
+    ctx.stroke();
+  }
+
+  if (template.accentShape === "heart") {
+    ctx.fillStyle = withAlpha(palette.accent2, 0.2);
+    ctx.beginPath();
+    ctx.arc(ratio.width - pad - 32, pad + 20, 36, 0, Math.PI * 2);
+    ctx.arc(ratio.width - pad - 78, pad + 20, 36, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = palette.accent2;
+    ctx.beginPath();
+    ctx.moveTo(ratio.width - pad - 100, pad + 40);
+    ctx.lineTo(ratio.width - pad - 55, pad + 96);
+    ctx.lineTo(ratio.width - pad - 10, pad + 40);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  if (template.accentShape === "luxury") {
+    ctx.strokeStyle = palette.accent;
+    ctx.lineWidth = 4;
+    ctx.strokeRect(64, 64, ratio.width - 128, ratio.height - 128);
+    ctx.strokeStyle = withAlpha(palette.accent2, 0.5);
+    ctx.beginPath();
+    ctx.moveTo(pad, pad);
+    ctx.lineTo(ratio.width - pad, ratio.height - pad);
+    ctx.stroke();
+  }
+
+  if (template.accentShape === "signature") {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.64);
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(pad, ratio.height - pad * 0.9);
+    ctx.bezierCurveTo(pad + 120, ratio.height - pad * 1.35, ratio.width - pad - 160, ratio.height - pad * 0.5, ratio.width - pad, ratio.height - pad);
+    ctx.stroke();
+  }
+
+  if (["neon", "pulse", "circuit"].includes(template.accentShape)) {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.8);
+    ctx.lineWidth = 5;
+    ctx.shadowColor = palette.accent;
+    ctx.shadowBlur = 22;
+    for (let i = 0; i < 4; i += 1) {
+      const y = pad + i * 58;
+      ctx.beginPath();
+      ctx.moveTo(pad, y);
+      ctx.lineTo(pad + 120, y);
+      ctx.lineTo(pad + 146, y + 26);
+      ctx.lineTo(ratio.width - pad, y + 26);
+      ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  if (["book", "grid"].includes(template.accentShape)) {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.32);
+    ctx.lineWidth = 2;
+    for (let x = pad; x < ratio.width - pad; x += 52) {
+      ctx.beginPath();
+      ctx.moveTo(x, pad);
+      ctx.lineTo(x, ratio.height - pad);
+      ctx.stroke();
+    }
+    for (let y = pad; y < ratio.height - pad; y += 52) {
+      ctx.beginPath();
+      ctx.moveTo(pad, y);
+      ctx.lineTo(ratio.width - pad, y);
+      ctx.stroke();
+    }
+  }
+
+  if (template.accentShape === "badge") {
+    ctx.fillStyle = palette.accent;
+    roundRect(ratio.width / 2 - 92, pad, 184, 52, 8);
+    ctx.fill();
+    ctx.fillStyle = palette.paper;
+    ctx.font = "800 24px 'PingFang SC','Microsoft YaHei',sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("NOTE", ratio.width / 2, pad + 27);
+  }
+
+  if (["steam", "wave"].includes(template.accentShape)) {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.55);
+    ctx.lineWidth = 5;
+    for (let i = 0; i < 4; i += 1) {
+      ctx.beginPath();
+      const y = ratio.height - pad - i * 34;
+      ctx.moveTo(pad, y);
+      ctx.bezierCurveTo(pad + 130, y - 44, ratio.width - pad - 130, y + 44, ratio.width - pad, y);
+      ctx.stroke();
+    }
+  }
+
+  if (template.accentShape === "plate") {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.55);
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.arc(ratio.width - pad - 56, ratio.height - pad - 56, 82, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(ratio.width - pad - 56, ratio.height - pad - 56, 48, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  if (template.accentShape === "route") {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.68);
+    ctx.lineWidth = 6;
+    ctx.setLineDash([12, 14]);
+    ctx.beginPath();
+    ctx.moveTo(pad, ratio.height - pad);
+    ctx.bezierCurveTo(ratio.width * 0.25, ratio.height * 0.62, ratio.width * 0.68, ratio.height * 0.38, ratio.width - pad, pad);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  if (["newspaper", "poster"].includes(template.accentShape)) {
+    ctx.fillStyle = withAlpha(palette.accent, 0.18);
+    ctx.fillRect(52, 52, ratio.width - 104, 76);
+    ctx.fillStyle = withAlpha(palette.text, 0.12);
+    for (let y = 156; y < ratio.height - 80; y += 34) {
+      ctx.fillRect(70, y, ratio.width - 140, 8);
+    }
+  }
+
+  if (template.accentShape === "seal") {
+    ctx.strokeStyle = palette.accent2;
+    ctx.lineWidth = 5;
+    ctx.strokeRect(ratio.width - pad - 84, ratio.height - pad - 84, 68, 68);
+    ctx.fillStyle = palette.accent2;
+    ctx.font = "800 24px 'PingFang SC','Microsoft YaHei',sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("印", ratio.width - pad - 50, ratio.height - pad - 50);
+  }
+
+  if (["bubble", "petal", "paw"].includes(template.accentShape)) {
+    ctx.fillStyle = withAlpha(palette.accent, 0.14);
+    for (let i = 0; i < 9; i += 1) {
+      const x = pad + pseudoRandom(i * 31) * (ratio.width - pad * 2);
+      const y = pad + pseudoRandom(i * 43) * (ratio.height - pad * 2);
+      ctx.beginPath();
+      ctx.arc(x, y, 18 + pseudoRandom(i * 57) * 34, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  if (template.accentShape === "comic") {
+    ctx.fillStyle = palette.accent2;
+    ctx.beginPath();
+    ctx.moveTo(ratio.width - pad - 40, pad);
+    for (let i = 0; i < 14; i += 1) {
+      const angle = (Math.PI * 2 * i) / 14;
+      const radius = i % 2 ? 44 : 82;
+      ctx.lineTo(ratio.width - pad - 40 + Math.cos(angle) * radius, pad + 76 + Math.sin(angle) * radius);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  if (template.accentShape === "leaf") {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.6);
+    ctx.lineWidth = 4;
+    for (let i = 0; i < 5; i += 1) {
+      ctx.beginPath();
+      const x = ratio.width - pad - i * 42;
+      const y = pad + i * 28;
+      ctx.ellipse(x, y, 38, 16, -0.6, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  if (["burst", "launch", "coupon"].includes(template.accentShape)) {
+    ctx.fillStyle = palette.accent2;
+    ctx.fillRect(pad, pad, ratio.width - pad * 2, 12);
+    ctx.fillRect(pad, ratio.height - pad - 12, ratio.width - pad * 2, 12);
+    ctx.fillStyle = withAlpha(palette.accent, 0.2);
+    ctx.beginPath();
+    ctx.arc(ratio.width - pad, pad, 120, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   ctx.restore();
