@@ -176,6 +176,53 @@ input[type="text"]:focus {
   gap: 10px;
 }
 
+.template-categories {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 6px;
+  scrollbar-width: thin;
+}
+
+.template-category {
+  min-height: 32px;
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcf9;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 9px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.template-category em {
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: #eef2ed;
+  color: var(--muted);
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.template-category.active {
+  border-color: var(--jade);
+  background: var(--jade-soft);
+  color: var(--ink);
+}
+
+.template-category.active em {
+  background: #ffffff;
+  color: var(--jade);
+}
+
 .template-card {
   min-height: 86px;
   border: 1px solid var(--line);
