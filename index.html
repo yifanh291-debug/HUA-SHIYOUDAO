@@ -69,6 +69,7 @@
               <div class="mini-segmented" id="dragModeGroup" aria-label="拖拽对象">
                 <button type="button" data-drag-mode="text" class="active">文案</button>
                 <button type="button" data-drag-mode="watermark">水印</button>
+                <button type="button" data-drag-mode="background">背景</button>
               </div>
               <button class="icon-button" id="fitButton" type="button" title="适应窗口">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M21 16v5h-5"/></svg>
@@ -136,6 +137,16 @@
               <span>虚化</span>
               <input id="backgroundBlur" type="range" min="0" max="18" value="4" />
               <output id="backgroundBlurValue">4</output>
+            </label>
+            <label class="inline-control">
+              <span>横向</span>
+              <input id="backgroundX" type="range" min="0" max="100" value="50" />
+              <output id="backgroundXValue">50</output>
+            </label>
+            <label class="inline-control">
+              <span>纵向</span>
+              <input id="backgroundY" type="range" min="0" max="100" value="50" />
+              <output id="backgroundYValue">50</output>
             </label>
           </section>
 
