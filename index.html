@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>公众号贴图生成器</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">贴</span>
+          <div>
+            <h1>公众号贴图生成器</h1>
+            <p>输入文案，生成可发布的文字图片</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" id="resetButton" type="button" title="重置">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v6h6"/></svg>
+          </button>
+          <button class="primary-button" id="downloadButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+            导出 PNG
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="sidebar panel">
+          <section class="control-block">
+            <label class="section-label" for="copyInput">文案</label>
+            <textarea id="copyInput" rows="9" maxlength="260" spellcheck="false">成长不是突然变强，而是一次次把自己接住。</textarea>
+            <div class="field-row">
+              <span id="charCount">0/260</span>
+              <button class="text-button" id="sampleButton" type="button">换一句</button>
+            </div>
+          </section>
+
+          <section class="control-block">
+            <div class="section-label">模板</div>
+            <div class="template-grid" id="templateGrid"></div>
+          </section>
+
+          <section class="control-block">
+            <div class="section-label">比例</div>
+            <div class="segmented" id="ratioGroup">
+              <button type="button" data-ratio="square" class="active">方图</button>
+              <button type="button" data-ratio="vertical">竖图</button>
+              <button type="button" data-ratio="cover">封面</button>
+            </div>
+          </section>
+
+          <section class="control-block">
+            <div class="section-label">配色</div>
+            <div class="swatches" id="paletteGrid"></div>
+          </section>
+        </aside>
+
+        <section class="preview-zone">
+          <div class="preview-toolbar">
+            <div>
+              <strong id="canvasTitle">方图 1080 x 1080</strong>
+              <span id="templateName">清醒便签</span>
+            </div>
+            <div class="zoom-tools" aria-label="预览缩放">
+              <div class="mini-segmented" id="dragModeGroup" aria-label="拖拽对象">
+                <button type="button" data-drag-mode="text" class="active">文案</button>
+                <button type="button" data-drag-mode="watermark">水印</button>
+              </div>
+              <button class="icon-button" id="fitButton" type="button" title="适应窗口">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M21 16v5h-5"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="canvas-frame" id="canvasFrame">
+            <canvas id="posterCanvas" width="1080" height="1080" aria-label="生成图片预览"></canvas>
+          </div>
+        </section>
+
+        <aside class="inspector panel">
+          <section class="control-block">
+            <div class="section-label">文字</div>
+            <label class="inline-control">
+              <span>字号</span>
+              <input id="fontSize" type="range" min="44" max="98" value="68" />
+              <output id="fontSizeValue">68</output>
+            </label>
+            <label class="inline-control">
+              <span>行距</span>
+              <input id="lineHeight" type="range" min="1.05" max="1.7" value="1.28" step="0.01" />
+              <output id="lineHeightValue">1.28</output>
+            </label>
+            <label class="inline-control">
+              <span>边距</span>
+              <input id="paddingSize" type="range" min="72" max="180" value="128" />
+              <output id="paddingSizeValue">128</output>
+            </label>
+            <label class="inline-control">
+              <span>横向</span>
+              <input id="textX" type="range" min="4" max="96" value="16" />
+              <output id="textXValue">16</output>
+            </label>
+            <label class="inline-control">
+              <span>纵向</span>
+              <input id="textY" type="range" min="8" max="86" value="44" />
+              <output id="textYValue">44</output>
+            </label>
+          </section>
+
+          <section class="control-block">
+            <div class="section-label">背景</div>
+            <div class="texture-grid" id="textureGroup">
+              <button type="button" data-texture="paper" class="active">纸感</button>
+              <button type="button" data-texture="linen">亚麻</button>
+              <button type="button" data-texture="grain">微粒</button>
+              <button type="button" data-texture="silk">丝绸</button>
+              <button type="button" data-texture="clean">纯净</button>
+            </div>
+            <label class="upload-box" for="backgroundInput">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-7-7h14"/></svg>
+              <span id="backgroundName">上传背景图</span>
+              <input id="backgroundInput" type="file" accept="image/*" />
+            </label>
+            <div class="background-tools">
+              <button class="text-button" id="clearBackgroundButton" type="button">清除背景</button>
+            </div>
+            <label class="inline-control">
+              <span>图感</span>
+              <input id="backgroundOpacity" type="range" min="0" max="0.72" value="0.34" step="0.01" />
+              <output id="backgroundOpacityValue">34%</output>
+            </label>
+            <label class="inline-control">
+              <span>虚化</span>
+              <input id="backgroundBlur" type="range" min="0" max="18" value="4" />
+              <output id="backgroundBlurValue">4</output>
+            </label>
+          </section>
+
+          <section class="control-block">
+            <label class="section-label" for="watermarkInput">水印</label>
+            <input id="watermarkInput" type="text" maxlength="24" value="你的公众号" />
+            <label class="check-row">
+              <input id="watermarkToggle" type="checkbox" checked />
+              <span>显示水印</span>
+            </label>
+            <label class="inline-control">
+              <span>大小</span>
+              <input id="watermarkSize" type="range" min="16" max="54" value="26" />
+              <output id="watermarkSizeValue">26</output>
+            </label>
+            <label class="inline-control">
+              <span>横向</span>
+              <input id="watermarkX" type="range" min="4" max="96" value="12" />
+              <output id="watermarkXValue">12</output>
+            </label>
+            <label class="inline-control">
+              <span>纵向</span>
+              <input id="watermarkY" type="range" min="4" max="96" value="88" />
+              <output id="watermarkYValue">88</output>
+            </label>
+          </section>
+
+          <section class="control-block">
+            <div class="section-label">导出</div>
+            <button class="export-button" id="downloadButtonSide" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+              保存图片
+            </button>
+            <p class="hint">生成的 PNG 会按当前比例输出高清尺寸。</p>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
