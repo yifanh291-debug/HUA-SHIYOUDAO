@@ -13,6 +13,7 @@ const templateCategories = [
   { key: "food", name: "美食" },
   { key: "travel", name: "旅行" },
   { key: "cartoon", name: "卡通" },
+  { key: "product", name: "产品" },
   { key: "marketing", name: "营销" },
 ];
 
@@ -678,6 +679,73 @@ Object.assign(templates, {
   },
 });
 
+Object.assign(templates, {
+  productIntro: {
+    name: "产品说明",
+    category: "product",
+    thumb: ["#f6fbf8", "#16835f"],
+    accentShape: "showcase",
+    align: "left",
+    weight: 840,
+  },
+  featureGrid: {
+    name: "功能总览",
+    category: "product",
+    thumb: ["#f8fafc", "#334155"],
+    accentShape: "featureGrid",
+    align: "center",
+    weight: 820,
+  },
+  interfaceDemo: {
+    name: "界面演示",
+    category: "product",
+    thumb: ["#eef7ff", "#2b6cb0"],
+    accentShape: "mockup",
+    align: "left",
+    weight: 820,
+  },
+  openSourceCard: {
+    name: "开源介绍",
+    category: "product",
+    thumb: ["#f5f7fb", "#24292f"],
+    accentShape: "repo",
+    align: "center",
+    weight: 840,
+  },
+  workflowSteps: {
+    name: "流程步骤",
+    category: "product",
+    thumb: ["#fff7ed", "#ea580c"],
+    accentShape: "steps",
+    align: "left",
+    weight: 820,
+  },
+  templateShowcase: {
+    name: "模板展示",
+    category: "product",
+    thumb: ["#fff5f7", "#db2777"],
+    accentShape: "gallery",
+    align: "center",
+    weight: 860,
+  },
+  privacyLocal: {
+    name: "本地隐私",
+    category: "product",
+    thumb: ["#ecfdf5", "#047857"],
+    accentShape: "shield",
+    align: "left",
+    weight: 820,
+  },
+  updateLog: {
+    name: "更新日志",
+    category: "product",
+    thumb: ["#f8fafc", "#7c3aed"],
+    accentShape: "timeline",
+    align: "left",
+    weight: 800,
+  },
+});
+
 const palettes = {
   ink: {
     name: "墨绿",
@@ -752,8 +820,11 @@ const state = {
   backgroundName: "",
   backgroundOpacity: 0.34,
   backgroundBlur: 4,
+  backgroundX: 50,
+  backgroundY: 50,
   isDraggingWatermark: false,
   isDraggingText: false,
+  isDraggingBackground: false,
   dragMode: "text",
 };
 
@@ -790,8 +861,12 @@ const elements = {
   clearBackgroundButton: document.querySelector("#clearBackgroundButton"),
   backgroundOpacity: document.querySelector("#backgroundOpacity"),
   backgroundBlur: document.querySelector("#backgroundBlur"),
+  backgroundX: document.querySelector("#backgroundX"),
+  backgroundY: document.querySelector("#backgroundY"),
   backgroundOpacityValue: document.querySelector("#backgroundOpacityValue"),
   backgroundBlurValue: document.querySelector("#backgroundBlurValue"),
+  backgroundXValue: document.querySelector("#backgroundXValue"),
+  backgroundYValue: document.querySelector("#backgroundYValue"),
   dragModeGroup: document.querySelector("#dragModeGroup"),
 };
 
@@ -943,6 +1018,8 @@ function bindEvents() {
     ["watermarkY", "watermarkY"],
     ["backgroundOpacity", "backgroundOpacity"],
     ["backgroundBlur", "backgroundBlur"],
+    ["backgroundX", "backgroundX"],
+    ["backgroundY", "backgroundY"],
   ].forEach(([id, key]) => {
     elements[id].addEventListener("input", (event) => {
       state[key] = Number(event.target.value);
@@ -964,6 +1041,10 @@ function bindEvents() {
       if (!state.showWatermark) return;
       state.isDraggingWatermark = true;
       updateWatermarkFromPointer(event);
+    } else if (state.dragMode === "background") {
+      if (!state.backgroundImage) return;
+      state.isDraggingBackground = true;
+      updateBackgroundFromPointer(event);
     } else {
       state.isDraggingText = true;
       updateTextFromPointer(event);
@@ -974,17 +1055,20 @@ function bindEvents() {
   canvas.addEventListener("pointermove", (event) => {
     if (state.isDraggingWatermark) updateWatermarkFromPointer(event);
     if (state.isDraggingText) updateTextFromPointer(event);
+    if (state.isDraggingBackground) updateBackgroundFromPointer(event);
   });
 
   canvas.addEventListener("pointerup", (event) => {
     state.isDraggingWatermark = false;
     state.isDraggingText = false;
+    state.isDraggingBackground = false;
     if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
   });
 
   canvas.addEventListener("pointercancel", () => {
     state.isDraggingWatermark = false;
     state.isDraggingText = false;
+    state.isDraggingBackground = false;
   });
 
   document.querySelector("#sampleButton").addEventListener("click", () => {
@@ -1010,6 +1094,8 @@ function bindEvents() {
     elements.backgroundInput.value = "";
     elements.backgroundOpacity.value = 0.34;
     elements.backgroundBlur.value = 4;
+    elements.backgroundX.value = 50;
+    elements.backgroundY.value = 50;
     Object.assign(state, {
       text: samples[0],
       template: "note",
@@ -1031,8 +1117,11 @@ function bindEvents() {
       backgroundName: "",
       backgroundOpacity: 0.34,
       backgroundBlur: 4,
+      backgroundX: 50,
+      backgroundY: 50,
       isDraggingWatermark: false,
       isDraggingText: false,
+      isDraggingBackground: false,
       dragMode: "text",
     });
     setActiveByData(elements.ratioGroup, "ratio", "square");
@@ -1082,6 +1171,8 @@ function drawPoster() {
   elements.backgroundName.textContent = state.backgroundName || "上传背景图";
   elements.backgroundOpacityValue.value = `${Math.round(state.backgroundOpacity * 100)}%`;
   elements.backgroundBlurValue.value = state.backgroundBlur;
+  elements.backgroundXValue.value = state.backgroundX;
+  elements.backgroundYValue.value = state.backgroundY;
 
   paintBackground(ratio, palette);
   paintTemplateChrome(ratio, template, palette);
@@ -1394,6 +1485,113 @@ function paintTemplateChrome(ratio, template, palette) {
     ctx.fill();
   }
 
+  if (["showcase", "mockup"].includes(template.accentShape)) {
+    ctx.fillStyle = withAlpha(palette.accent, 0.12);
+    roundRect(ratio.width - pad - 330, pad, 280, 190, 16);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(palette.accent, 0.58);
+    ctx.lineWidth = 4;
+    roundRect(ratio.width - pad - 310, pad + 24, 240, 142, 10);
+    ctx.stroke();
+    ctx.fillStyle = withAlpha(palette.text, 0.18);
+    ctx.fillRect(ratio.width - pad - 288, pad + 48, 82, 10);
+    ctx.fillRect(ratio.width - pad - 288, pad + 76, 170, 10);
+    ctx.fillRect(ratio.width - pad - 288, pad + 104, 132, 10);
+  }
+
+  if (template.accentShape === "featureGrid") {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.38);
+    ctx.lineWidth = 3;
+    const size = Math.min(132, (ratio.width - pad * 2 - 28) / 3);
+    for (let i = 0; i < 6; i += 1) {
+      const col = i % 3;
+      const row = Math.floor(i / 3);
+      const x = pad + col * (size + 14);
+      const y = ratio.height - pad - size * 2 - 18 + row * (size + 14);
+      roundRect(x, y, size, size, 12);
+      ctx.stroke();
+      ctx.fillStyle = withAlpha(i % 2 ? palette.accent2 : palette.accent, 0.12);
+      ctx.fill();
+    }
+  }
+
+  if (template.accentShape === "repo") {
+    ctx.fillStyle = "#ffffff";
+    ctx.globalAlpha = 0.82;
+    roundRect(pad, ratio.height - pad - 138, ratio.width - pad * 2, 108, 14);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = withAlpha(palette.text, 0.18);
+    ctx.stroke();
+    ctx.fillStyle = palette.accent;
+    ctx.fillRect(pad + 28, ratio.height - pad - 104, 120, 12);
+    ctx.fillStyle = withAlpha(palette.text, 0.24);
+    ctx.fillRect(pad + 28, ratio.height - pad - 72, ratio.width - pad * 2 - 56, 9);
+  }
+
+  if (template.accentShape === "steps") {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.48);
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(pad, ratio.height - pad - 72);
+    ctx.lineTo(ratio.width - pad, ratio.height - pad - 72);
+    ctx.stroke();
+    for (let i = 0; i < 4; i += 1) {
+      const x = pad + ((ratio.width - pad * 2) * i) / 3;
+      ctx.fillStyle = i % 2 ? palette.accent2 : palette.accent;
+      ctx.beginPath();
+      ctx.arc(x, ratio.height - pad - 72, 18, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  if (template.accentShape === "gallery") {
+    for (let i = 0; i < 5; i += 1) {
+      const w = 112;
+      const h = 144;
+      const x = pad + i * 74;
+      const y = ratio.height - pad - h - (i % 2) * 24;
+      ctx.fillStyle = i % 2 ? withAlpha(palette.accent2, 0.2) : withAlpha(palette.accent, 0.18);
+      roundRect(x, y, w, h, 12);
+      ctx.fill();
+      ctx.strokeStyle = withAlpha(palette.text, 0.14);
+      ctx.stroke();
+    }
+  }
+
+  if (template.accentShape === "shield") {
+    ctx.strokeStyle = palette.accent;
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(ratio.width - pad - 78, pad);
+    ctx.lineTo(ratio.width - pad, pad + 36);
+    ctx.lineTo(ratio.width - pad - 24, pad + 130);
+    ctx.lineTo(ratio.width - pad - 78, pad + 168);
+    ctx.lineTo(ratio.width - pad - 132, pad + 130);
+    ctx.lineTo(ratio.width - pad - 156, pad + 36);
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  if (template.accentShape === "timeline") {
+    ctx.strokeStyle = withAlpha(palette.accent, 0.55);
+    ctx.lineWidth = 4;
+    const x = pad + 34;
+    ctx.beginPath();
+    ctx.moveTo(x, pad);
+    ctx.lineTo(x, ratio.height - pad);
+    ctx.stroke();
+    for (let i = 0; i < 5; i += 1) {
+      const y = pad + 80 + i * 90;
+      ctx.fillStyle = i % 2 ? palette.accent2 : palette.accent;
+      ctx.beginPath();
+      ctx.arc(x, y, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = withAlpha(palette.text, 0.16);
+      ctx.fillRect(x + 34, y - 5, 168, 10);
+    }
+  }
+
   ctx.restore();
 }
 
@@ -1538,8 +1736,10 @@ function paintUploadedBackground(ratio, opacity) {
   const scale = Math.max(ratio.width / image.width, ratio.height / image.height);
   const width = image.width * scale;
   const height = image.height * scale;
-  const x = (ratio.width - width) / 2;
-  const y = (ratio.height - height) / 2;
+  const overflowX = Math.max(0, width - ratio.width);
+  const overflowY = Math.max(0, height - ratio.height);
+  const x = -overflowX * (state.backgroundX / 100);
+  const y = -overflowY * (state.backgroundY / 100);
 
   ctx.save();
   ctx.globalAlpha = opacity;
@@ -1567,6 +1767,10 @@ function handleBackgroundUpload(event) {
     image.addEventListener("load", () => {
       state.backgroundImage = image;
       state.backgroundName = file.name;
+      state.backgroundX = 50;
+      state.backgroundY = 50;
+      elements.backgroundX.value = 50;
+      elements.backgroundY.value = 50;
       drawPoster();
     });
     image.src = reader.result;
@@ -1593,6 +1797,17 @@ function updateTextFromPointer(event) {
   state.textY = clamp(Math.round(y), 8, 86);
   elements.textX.value = state.textX;
   elements.textY.value = state.textY;
+  drawPoster();
+}
+
+function updateBackgroundFromPointer(event) {
+  const rect = canvas.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) / rect.width) * 100;
+  const y = ((event.clientY - rect.top) / rect.height) * 100;
+  state.backgroundX = clamp(Math.round(x), 0, 100);
+  state.backgroundY = clamp(Math.round(y), 0, 100);
+  elements.backgroundX.value = state.backgroundX;
+  elements.backgroundY.value = state.backgroundY;
   drawPoster();
 }
 
